@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>오프라인 사진 제목 게임</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+  body { font-family: Arial; max-width: 500px; margin: auto; padding: 20px; }
+  .card { background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 3px 5px rgba(0,0,0,0.1); margin-bottom: 20px; }
+  input, button { width: 100%; padding: 12px; font-size: 16px; margin-top: 10px; border-radius: 10px; }
+  button { background: #5865F2; color: white; border: none; font-weight: bold; }
+  .buzzer-btn { background: #FF5252; font-size: 20px; }
+  .like-btn { background: #FFA726; margin-top: 10px; }
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <h2>플레이어 추가</h2>
+  <input id="playerName" placeholder="이름 입력">
+  <button onclick="addPlayer()">추가</button>
+
+  <div id="playerList"></div>
+</div>
+
+<div class="card">
+  <h2>버저(손 버튼)</h2>
+  <button class="buzzer-btn" onclick="pressBuzzer()">손 버튼 누르기</button>
+
+  <h3 id="buzzerResult">아직 아무도 누르지 않음</h3>
+</div>
+
+<div class="card" id="captionBox" style="display:none;">
+  <h2>제목 입력</h2>
+  <input id="captionInput" placeholder="제목 입력">
+  <button onclick="submitCaption()">제출</button>
+</div>
+
+<div class="card" id="showCaption" style="display:none;">
+  <h2>제출된 제목</h2>
+  <div id="captionText"></div>
+  <button class="like-btn" onclick="addLike()">👍 좋아요</button>
+  <div id="likeCount">좋아요: 0</div>
+</div>
+
+<div class="card">
+  <button onclick="resetRound()">다음 라운드 시작</button>
+</div>
+
+<script>
+  let players = [];
+  let buzzerWinner = null;
+  let likes = 0;
+
+  // 플레이어 추가
+  function addPlayer() {
+    let name = document.getElementById("playerName").value;
+    if (!name) return alert("이름 입력!");
+
+    players.push(name);
+    updatePlayerList();
+    document.getElementById("playerName").value = "";
+  }
+
+  function updatePlayerList() {
+    let list = document.getElementById("playerList");
+    list.innerHTML = "<h3>플레이어:</h3>" + players.map(p => "- " + p).join("<br>");
+  }
+
+  // 버저 누르기
+  function pressBuzzer() {
+    if (buzzerWinner) return alert("이미 누른 사람이 있습니다!");
+
+    let name = prompt("당신의 이름을 입력하세요 (확인용)");
+    if (!players.includes(name)) {
+      alert("등록된 플레이어가 아닙니다!");
+      return;
+    }
+
+    buzzerWinner = name;
+    document.getElementById("buzzerResult").innerText = name + " 님이 먼저 눌렀습니다!";
+
+    // 제목 입력창 활성화
+    document.getElementById("captionBox").style.display = "block";
+  }
+
+  // 제목 제출
+  function submitCaption() {
+    let text = document.getElementById("captionInput").value;
+    if (!text) return;
+
+    document.getElementById("captionText").innerText = text;
+    document.getElementById("showCaption").style.display = "block";
+
+    document.getElementById("captionInput").value = "";
+  }
+
+  // 좋아요 증가
+  function addLike() {
+    likes++;
+    document.getElementById("likeCount").innerText = "좋아요: " + likes;
+  }
+
+  // 다음 라운드
+  function resetRound() {
+    buzzerWinner = null;
+    likes = 0;
+
+    document.getElementById("buzzerResult").innerText = "아직 아무도 누르지 않음";
+    document.getElementById("captionBox").style.display = "none";
+    document.getElementById("showCaption").style.display = "none";
+    document.getElementById("likeCount").innerText = "좋아요: 0";
+  }
+</script>
+
+</body>
+</html>
